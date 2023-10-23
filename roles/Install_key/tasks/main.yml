@@ -1,0 +1,51 @@
+---
+
+ - name: Mise à Jour Système
+   apt: 
+     update_cache: yes
+   when: os_family == "Ubuntu"
+
+ - name: Installation Clé public
+   ansible.posix.authorized_key:
+     user: "{{ target_user }}"
+     state: present
+     key: "{{ lookup('file', '~/.ssh/id_rsa.pub')  }}"
+   when: os_family == "Ubuntu"
+
+ - name: Changement rôle utilisateur
+   lineinfile:
+     path: /etc/sudoers
+     state: present
+     regexp: '^%sudo'
+     line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+     validate: /usr/sbin/visudo -cf %s
+   when: os_family == "Ubuntu"
+
+ - name: "{{ target_user }} devient sudoers"
+   when: user is defined
+   template:
+     src: sudoers.j2
+     dest: /etc/sudoers.d/{{ target_user }}-sudoer
+     validate: visudo -cf %s
+
+ - name: Mise à Jour Système
+   yum:
+     update_cache: yes
+   when: os_family == "RedHat"
+
+ - name: Installation Clé 
+   ansible.posix.authorized_key:
+     user: "{{ target_user }}"
+     state: present
+     key: "{{ lookup('file', '~/.ssh/id_rsa.pub')  }}"
+   when: os_family == "RedHat"
+
+ - name: Changement rôle utilisateur
+   lineinfile:
+     path: /etc/sudoers
+     state: present
+     regexp: '^%wheel'
+     line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+     validate: /usr/sbin/visudo -cf %s 
+   when: os_family == "RedHat"
+...

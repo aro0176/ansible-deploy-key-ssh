@@ -1,0 +1,9 @@
+---
+ - name: Installation Key SSH 
+   hosts: Host
+   remote_user: "{{ ansible_ssh_user }}"
+   become: yes
+
+   roles:
+     - Install_key
+...
