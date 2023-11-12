@@ -37,7 +37,7 @@
    ansible.posix.authorized_key:
      user: "{{ target_user }}"
      state: present
-     key: "{{ lookup('file', '~/.ssh/id_rsa.pub')  }}"
+     key: "{{ lookup('file', '~/.ssh/jenkins_rsa.pub')  }}"
    when: os_family == "RedHat"
 
  - name: Changement rôle utilisateur
